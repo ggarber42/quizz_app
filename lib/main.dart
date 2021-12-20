@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
+import './quizz.dart';
+import './result.dart';
 
 void main() => runApp(MyApp());
 
@@ -14,46 +14,64 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
-  final questions = const [
-      {
-        'questionText': 'What\'s your favourite color?',
-        'answers': ['Black', 'Red', 'Green', 'White'],
-      },
-      {
-        'questionText': 'What\'s your favourite animal?',
-        'answers': ['Rabbit', 'Snake', 'Elephant', 'Lion'],
-      },
-      {
-        'questionText': 'Who\'s your favourite instructor?',
-        'answers': ['Tom', 'Amy', 'Jade', 'Maia'],
-      },
-    ];
+  var _totalScore = 0;
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favourite color?',
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Red', 'score': 5},
+        {'text': 'Green', 'score': 3},
+        {'text': 'White', 'score': 1}
+      ],
+    },
+    {
+      'questionText': 'What\'s your favourite animal?',
+      'answers': [
+        {'text': 'Rabbit', 'score': 5},
+        {'text': 'Snake', 'score': 10},
+        {'text': 'Elephant', 'score': 3},
+        {'text': 'Lion', 'score': 1}
+      ],
+    },
+    {
+      'questionText': 'Who\'s your favourite instructor?',
+      'answers': [
+        {'text': 'Tom', 'score': 1},
+        {'text': 'Amy', 'score': 1},
+        {'text': 'Jade', 'score': 1},
+        {'text': 'Maia', 'score': 1}
+      ],
+    },
+  ];
 
-  void _answerQuestion() {
-    if(_questionIndex < questions.length){
-      print('We have');
-    }
+  void _answerQuestion(int score) {
+    _totalScore += score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
-    print(_questionIndex);
+  }
+
+  void _resetQuizz(){
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
   }
 
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
       appBar: AppBar(
         title: Text('Quizz app'),
       ),
-      body: Column(
-        children: [
-          Question(questions[_questionIndex]['questionText'] as String),
-          ...(questions[_questionIndex]['answers'] as List<String>)
-              .map((answer) => Answer(_answerQuestion, answer))
-              .toList()
-        ],
-      ),
+      body: _questionIndex < _questions.length
+          ? Quizz(
+              answerQuestion: _answerQuestion,
+              questionIndex: _questionIndex,
+              questions: _questions)
+          : Result(_totalScore, _resetQuizz),
     ));
   }
 }
